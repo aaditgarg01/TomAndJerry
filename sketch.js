@@ -1,93 +1,56 @@
-var cat, mouse;
-var cLay, cWa1, cWa2, cSit;
-var mChs, mHnd, mTng, mGls;
-var garden, gardenImg;
-
-var WALK = 0;
-var DONE = 1;
-var gameState;
-
-var WALKTIME = 15;
-var walkTimer;
-
-var WALKSPEED = 2;
+var canvas,bg;
+var together;
+var tom, tomImg1,tomImg2;
+var jerry, jerryImg1,jerryImg2;
 
 function preload() {
-    gardenImg = loadImage('garden.png');
-
-    cLay = loadImage('cat1.png');
-    cWa1 = loadImage('cat2.png');
-    cWa2 = loadImage('cat3.png');
-    cSit = loadImage('cat4.png');
-
-    mChs = loadImage('mouse1.png');
-    mHnd = loadImage('mouse2.png');
-    mTng = loadImage('mouse3.png');
-    mGls = loadImage('mouse4.png');
+    bg = loadImage("images/garden.png");
+    tomImg1= loadAnimation("images/tomOne.png");
+    tomImg2=loadAnimation("images/tomTwo.png","images/tomThree.png");
+    tomImg3= loadAnimation("images/tomFour.png");
+    jerryImg1=loadAnimation("images/jerryOne.png");
+    jerryImg2= loadAnimation("images/jerryTwo.png","images/jerryThree.png");
+    jerryImg3=loadAnimation("images/jerryFour.png");
 }
 
 function setup(){
-    createCanvas(975,705);
+    canvas = createCanvas(1000,800);
 
-    garden = createSprite(487.5, 352.5);
-    garden.addImage('bg', gardenImg);
+    tom = createSprite(870, 600);
+    tom.addAnimation("tomSleeping", tomImg1);
+    tom.scale = 0.2;
 
-    cat = createSprite(700, 570);
-    cat.addImage('cat', cLay);
-    cat.addAnimation('walk', cWa1, cWa2);
-    cat.addImage('sit', cSit);
-    cat.scale = 0.15;
-
-    mouse = createSprite(200, 570);
-    mouse.addImage('cheese', mChs);
-    mouse.addAnimation('weird', mHnd, mTng);
-    mouse.addImage('look', mGls);
-    mouse.scale = 0.1;
-
-    gameState = WALK;
-    walkTimer = 0;
+    jerry = createSprite(200, 600);
+    jerry.addAnimation("jerryStanding", jerryImg1);
+    jerry.scale = 0.15;
 }
 
 function draw() {
-    background(255);
-    
-    walkTimer--;
+    background(bg);
 
-    if (gameState == WALK)
-    {
-        if (walkTimer > 0)
-        {
-            cat.x -= WALKSPEED;
-            cat.changeAnimation('walk');
-            cat.scale = 0.2;
-
-            mouse.changeAnimation('weird');
-        }
-        else
-        {
-            cat.changeImage('cat', cLay);
-            cat.scale = 0.15;
-
-            mouse.changeImage('cheese', mChs);
-        }
-
-        if (Math.abs(mouse.x - cat.x) <= ((cat.width*0.5*cat.scale) + (mouse.width*0.5*mouse.scale)))
-        {
-            gameState = DONE;
-        }
-    }
-
-    if (gameState == DONE)
-    {
-        cat.changeImage('sit', cSit);
-        mouse.changeImage('look', mGls);
-    }
+    if(tom.x - jerry.x < (tom.width - jerry.width)/2)
+    { 
+        tom.velocityX=0;
+        tom.addAnimation("tomLastImage", tomImg3);
+        tom.x =300;
+        tom.scale=0.2;
+        tom.changeAnimation("tomLastImage");
+        jerry.addAnimation("jerryLastImage", jerryImg3);
+        jerry.scale=0.15;
+        jerry.changeAnimation("jerryLastImage");
+    }  
 
     drawSprites();
 }
 
-
 function keyPressed(){
-    walkTimer = WALKTIME;
-
+    if(keyDown("left")){
+        tom.velocityX = -5; 
+        tom.addAnimation("tomRunning", tomImg2);
+        tom.changeAnimation("tomRunning");
+        
+        jerry.addAnimation("jerryTeasing", jerryImg2);
+        jerry.frameDelay = 25;
+        jerry.changeAnimation("jerryTeasing");
+    }
 }
